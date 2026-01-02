@@ -11,12 +11,9 @@ URL_TEMPLATE = (
 )
 
 
-def build_url(today: dt.date) -> str:
-    parsed = urllib.parse.urlparse(URL_TEMPLATE)
-    query = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
-    query["sv"] = [today.strftime("%Y-%m-%d")]
-    new_query = urllib.parse.urlencode(query, doseq=True)
-    return urllib.parse.urlunparse(parsed._replace(query=new_query))
+def build_url(_: dt.date) -> str:
+    # The SAS signature is bound to the full query string. Keep it unchanged.
+    return URL_TEMPLATE
 
 
 def pick_output_path(today: dt.date) -> pathlib.Path:
