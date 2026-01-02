@@ -20,6 +20,18 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install Selenium
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install selenium
+
+      - name: Install Chromium and ChromeDriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-chromedriver
+          echo "CHROME_BIN=$(command -v chromium-browser || command -v chromium)" >> $GITHUB_ENV
+          echo "CHROMEDRIVER=$(command -v chromedriver)" >> $GITHUB_ENV
+
       - name: Download latest file
         run: python3 download_postalpoints.py
 
@@ -28,7 +40,7 @@ jobs:
           if git status --porcelain | grep -q .; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add postalpoints_*.csv
+            git add postalpoints_*.csv static/snapshots/*.csv static/snapshots/index.csv
             git commit -m "Add postal points for $(date -u +%Y-%m-%d)"
             git push
           else
