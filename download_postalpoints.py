@@ -4,10 +4,12 @@ import pathlib
 import urllib.request
 import csv
 import io
+import os
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -68,7 +70,16 @@ def fetch_latest_url() -> str:
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1280,720")
 
-    driver = webdriver.Chrome(options=options)
+    chrome_bin = os.getenv("CHROME_BIN") or os.getenv("CHROMIUM_BIN")
+    if chrome_bin:
+        options.binary_location = chrome_bin
+
+    service = None
+    chromedriver = os.getenv("CHROMEDRIVER")
+    if chromedriver:
+        service = Service(executable_path=chromedriver)
+
+    driver = webdriver.Chrome(service=service, options=options)
     try:
         driver.get(LANDING_PAGE_URL)
         wait = WebDriverWait(driver, 15)
